@@ -33,7 +33,8 @@ function rgbToOklch(r, g, b) {
   let h = Math.atan2(b2, a) * 180 / Math.PI;
   if (h < 0) h += 360;
 
-  const result = `oklch(${(l * 100).toFixed(2)}% ${c.toFixed(2)} ${h.toFixed(2)})`;
+  // Round to 4 decimal places for better precision
+  const result = `oklch(${(l * 100).toFixed(4)}% ${c.toFixed(4)} ${h.toFixed(4)})`;
   console.log('OKLCH result:', result);
   return result;
 }
@@ -87,7 +88,28 @@ function getColorAtPoint(x, y) {
 
   console.log('Element found:', element.tagName, element.className);
   
-  // First try to find the closest SVG element
+  // First try computed styles
+  const style = window.getComputedStyle(element);
+  const colorProperties = [
+    'backgroundColor',
+    'color',
+    'borderColor',
+    'outlineColor'
+  ];
+
+  for (const prop of colorProperties) {
+    const color = style[prop];
+    console.log(`Checking ${prop}:`, color);
+    if (color && color !== 'transparent' && color !== 'rgba(0, 0, 0, 0)') {
+      const rgb = parseColor(color);
+      if (rgb) {
+        console.log(`Found color in ${prop}:`, rgb);
+        return rgb;
+      }
+    }
+  }
+
+  // Then try to find the closest SVG element
   let currentElement = element;
   while (currentElement) {
     if (currentElement.tagName === 'svg' || currentElement.tagName === 'path' || 
@@ -112,9 +134,9 @@ function getColorAtPoint(x, y) {
       }
       
       // Then check computed styles
-      const style = window.getComputedStyle(currentElement);
-      const fillStyle = style.fill;
-      const strokeStyle = style.stroke;
+      const svgStyle = window.getComputedStyle(currentElement);
+      const fillStyle = svgStyle.fill;
+      const strokeStyle = svgStyle.stroke;
       
       if (fillStyle && fillStyle !== 'none') {
         console.log('Found fill style:', fillStyle);
@@ -129,43 +151,6 @@ function getColorAtPoint(x, y) {
       }
     }
     currentElement = currentElement.parentElement;
-  }
-
-  // If no SVG color found, try canvas
-  if (element.tagName === 'CANVAS') {
-    try {
-      const canvas = element;
-      const rect = canvas.getBoundingClientRect();
-      const ctx = canvas.getContext('2d');
-      
-      // Get the pixel data at the clicked point
-      const pixel = ctx.getImageData(x - rect.left, y - rect.top, 1, 1).data;
-      console.log('Canvas pixel data:', pixel);
-      return [pixel[0], pixel[1], pixel[2]];
-    } catch (e) {
-      console.log('Cannot access canvas pixel data due to CORS:', e);
-    }
-  }
-
-  // Finally, try computed styles
-  const style = window.getComputedStyle(element);
-  const colorProperties = [
-    'backgroundColor',
-    'color',
-    'borderColor',
-    'outlineColor'
-  ];
-
-  for (const prop of colorProperties) {
-    const color = style[prop];
-    console.log(`Checking ${prop}:`, color);
-    if (color && color !== 'transparent' && color !== 'rgba(0, 0, 0, 0)') {
-      const rgb = parseColor(color);
-      if (rgb) {
-        console.log(`Found color in ${prop}:`, rgb);
-        return rgb;
-      }
-    }
   }
 
   // If still no color found, try parent elements
