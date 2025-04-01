@@ -117,6 +117,24 @@ describe('rgbToOklch', () => {
     expect(c).toBeLessThan(0.05); // Adjusted based on actual results
   });
 
+  test('converts dark red RGB(124, 1, 7) correctly', () => {
+    const result = rgbToOklch(124, 1, 7);
+    
+    // Extract OKLCH values
+    const matches = result.match(/oklch\((\d+)% (\d+\.\d+) (\d+\.\d+)\)/);
+    const l = parseFloat(matches[1]);
+    const c = parseFloat(matches[2]);
+    const h = parseFloat(matches[3]);
+    
+    // Expected values: oklch(37% 0.15 27.51)
+    expect(l).toBe(37); // Lightness should be 37%
+    expect(c).toBeCloseTo(0.15, 2); // Chroma should be around 0.15
+    expect(h).toBeCloseTo(27.51, 2); // Hue should be around 27.51 degrees
+    
+    // The output should match the expected format with more flexible decimal places
+    expect(result).toMatch(/^oklch\(37% 0\.1[45]\d* 27\.50\d+\)$/);
+  });
+
   // Additional test with console output for debugging
   test('debug RGB(50, 96, 224) conversion', () => {
     // Temporarily restore console.log for this test
