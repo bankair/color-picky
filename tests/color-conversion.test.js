@@ -89,13 +89,15 @@ describe('rgbToOklch', () => {
     const c = parseFloat(matches[2]);
     const h = parseFloat(matches[3]);
     
-    // Based on the actual values from our implementation
-    expect(l).toBeCloseTo(53.34, 1); // Lightness around 53.34%
-    expect(c).toBeCloseTo(0.40, 1); // Chroma around 0.40
-    expect(h).toBeCloseTo(311.62, 0); // Hue around 311.62 degrees
+    // Expected values from the reference implementation: oklch(0.54 0.2017 265.1)
+    // Note: Our implementation uses percentage for lightness, so 0.54 becomes 54%
+    expect(l).toBeCloseTo(54, 0); // Should be around 54%
+    expect(c).toBeCloseTo(0.2017, 3); // Should be around 0.2017
+    expect(h).toBeCloseTo(265.1, 1); // Should be around 265.1 degrees
     
-    // The output should match the general format of OKLCH
-    expect(result).toMatch(/^oklch\(53\.\d+% 0\.\d+ 311\.\d+\)$/);
+    // The output should match this format with the expected values
+    // Note: Test will fail until implementation is fixed
+    expect(result).toMatch(/^oklch\(54(\.\d+)?% 0\.20\d+ 265\.\d+\)$/);
   });
 
   test('converts a known color correctly', () => {
