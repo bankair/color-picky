@@ -45,8 +45,9 @@ function rgbToOklch(r, g, b) {
   // Use a threshold to determine low chroma
   const hue = C < 0.00001 ? 0 : h;
 
-  // Format result with better precision and percentage notation for lightness
-  const result = `oklch(${(L * 100).toFixed(4)}% ${C.toFixed(4)} ${hue.toFixed(4)})`;
+  // Format result with integer percentage for lightness and precision for chroma and hue
+  const lightness = Math.round(L * 100); // Round to nearest integer
+  const result = `oklch(${lightness}% ${C.toFixed(4)} ${hue.toFixed(4)})`;
   console.log('OKLCH result:', result);
   return result;
 }

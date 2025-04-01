@@ -23,7 +23,7 @@ describe('Debug Color Conversion', () => {
     console.log(`\nRGB(${r}, ${g}, ${b}) converts to: ${result}`);
 
     // Parse the OKLCH values
-    const matches = result.match(/oklch\((\d+\.\d+)% (\d+\.\d+) (\d+\.\d+)\)/);
+    const matches = result.match(/oklch\((\d+)% (\d+\.\d+) (\d+\.\d+)\)/);
     if (matches) {
       const l = parseFloat(matches[1]);
       const c = parseFloat(matches[2]);
