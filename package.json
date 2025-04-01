@@ -3,9 +3,16 @@
   "version": "1.0.0",
   "description": "Chrome extension for picking colors and converting to OKLCH format",
   "scripts": {
-    "generate-icons": "node generate_icons.js"
+    "generate-icons": "node generate_icons.js",
+    "test": "jest"
   },
   "dependencies": {
     "canvas": "^2.11.2"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  },
+  "jest": {
+    "verbose": true
   }
 } 
