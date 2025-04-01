@@ -1,0 +1,11 @@
+{
+  "name": "color-picky",
+  "version": "1.0.0",
+  "description": "Chrome extension for picking colors and converting to OKLCH format",
+  "scripts": {
+    "generate-icons": "node generate_icons.js"
+  },
+  "dependencies": {
+    "canvas": "^2.11.2"
+  }
+} 

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="128" height="128" fill="#4CAF50"/>
+  
+  <!-- Color wheel -->
+  <g transform="translate(64,64)">
+    <!-- Color segments -->
+    <g id="wheel">
+      <path d="M0,-40 A40,40 0 0 1 34.64,-20 L0,0 Z" fill="#FF0000"/>
+      <path d="M34.64,-20 A40,40 0 0 1 34.64,20 L0,0 Z" fill="#FF8000"/>
+      <path d="M34.64,20 A40,40 0 0 1 0,40 L0,0 Z" fill="#FFFF00"/>
+      <path d="M0,40 A40,40 0 0 1 -34.64,20 L0,0 Z" fill="#00FF00"/>
+      <path d="M-34.64,20 A40,40 0 0 1 -34.64,-20 L0,0 Z" fill="#00FFFF"/>
+      <path d="M-34.64,-20 A40,40 0 0 1 0,-40 L0,0 Z" fill="#0000FF"/>
+    </g>
+    
+    <!-- Center dot -->
+    <circle cx="0" cy="0" r="12" fill="white"/>
+  </g>
+</svg> 
