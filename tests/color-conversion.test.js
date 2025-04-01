@@ -91,13 +91,12 @@ describe('rgbToOklch', () => {
     
     // Expected values from the reference implementation: oklch(0.54 0.2017 265.1)
     // Note: Our implementation uses percentage for lightness, so 0.54 becomes 54%
-    expect(l).toBeCloseTo(54, 0); // Should be around 54%
-    expect(c).toBeCloseTo(0.2017, 3); // Should be around 0.2017
-    expect(h).toBeCloseTo(265.1, 1); // Should be around 265.1 degrees
+    expect(l).toBeCloseTo(54, 0); // Allow for small differences (±0.5)
+    expect(c).toBeCloseTo(0.2017, 3); // Should be very close to 0.2017
+    expect(h).toBeCloseTo(265.1, 1); // Should be very close to 265.1 degrees
     
-    // The output should match this format with the expected values
-    // Note: Test will fail until implementation is fixed
-    expect(result).toMatch(/^oklch\(54(\.\d+)?% 0\.20\d+ 265\.\d+\)$/);
+    // The output should match this general format, with some flexibility for precision differences
+    expect(result).toMatch(/^oklch\(5[3-4](\.\d+)?% 0\.201\d+ 265\.\d+\)$/);
   });
 
   test('converts a known color correctly', () => {

@@ -2,37 +2,51 @@
 function rgbToOklch(r, g, b) {
   console.log('Converting RGB to OKLCH:', { r, g, b });
   
-  // First convert RGB to linear RGB
-  let r1 = r / 255;
-  let g1 = g / 255;
-  let b1 = b / 255;
+  // Step 1: Convert sRGB to linear RGB (remove gamma correction)
+  // Normalize RGB values to range [0, 1]
+  let lr = r / 255;
+  let lg = g / 255;
+  let lb = b / 255;
 
-  // Convert to sRGB
-  r1 = r1 > 0.04045 ? Math.pow((r1 + 0.055) / 1.055, 2.4) : r1 / 12.92;
-  g1 = g1 > 0.04045 ? Math.pow((g1 + 0.055) / 1.055, 2.4) : g1 / 12.92;
-  b1 = b1 > 0.04045 ? Math.pow((b1 + 0.055) / 1.055, 2.4) : b1 / 12.92;
+  // Apply sRGB gamma correction removal (sRGB to linear RGB)
+  lr = lr <= 0.04045 ? lr / 12.92 : Math.pow((lr + 0.055) / 1.055, 2.4);
+  lg = lg <= 0.04045 ? lg / 12.92 : Math.pow((lg + 0.055) / 1.055, 2.4);
+  lb = lb <= 0.04045 ? lb / 12.92 : Math.pow((lb + 0.055) / 1.055, 2.4);
 
-  // Convert to XYZ
-  const x = r1 * 0.4124564 + g1 * 0.3575761 + b1 * 0.1804375;
-  const y = r1 * 0.2126729 + g1 * 0.7151522 + b1 * 0.0721750;
-  const z = r1 * 0.0193339 + g1 * 0.1191920 + b1 * 0.9503041;
+  // Step 2: Convert linear RGB to OKLab
+  // Linear RGB to LMS (long, medium, short cone response)
+  const lms_l = 0.4122214708 * lr + 0.5363325363 * lg + 0.0514459929 * lb;
+  const lms_m = 0.2119034982 * lr + 0.6806995451 * lg + 0.1073969566 * lb;
+  const lms_s = 0.0883024619 * lr + 0.2817188376 * lg + 0.6299787005 * lb;
+
+  // Apply the non-linearity (cube root)
+  const lCubeRoot = Math.cbrt(lms_l);
+  const mCubeRoot = Math.cbrt(lms_m);
+  const sCubeRoot = Math.cbrt(lms_s);
 
   // Convert to OKLab
-  const x1 = Math.pow(x, 1/3);
-  const y1 = Math.pow(y, 1/3);
-  const z1 = Math.pow(z, 1/3);
+  const L = 0.2104542553 * lCubeRoot + 0.7936177850 * mCubeRoot - 0.0040720468 * sCubeRoot;
+  const a = 1.9779984951 * lCubeRoot - 2.4285922050 * mCubeRoot + 0.4505937099 * sCubeRoot;
+  const b_lab = 0.0259040371 * lCubeRoot + 0.7827717662 * mCubeRoot - 0.8086757660 * sCubeRoot;
 
-  const l = 0.2104542553 * x1 + 0.7936177850 * y1 - 0.0040720468 * z1;
-  const a = 1.9779984951 * x1 - 2.4285922050 * y1 + 0.4505937099 * z1;
-  const b2 = 0.0259040371 * x1 + 0.7827717662 * y1 - 0.8086757660 * z1;
-
-  // Convert to OKLCH
-  const c = Math.sqrt(a * a + b2 * b2);
-  let h = Math.atan2(b2, a) * 180 / Math.PI;
+  // Step 3: Convert OKLab to OKLCH
+  // Calculate chroma (distance from neutral gray axis)
+  const C = Math.sqrt(a * a + b_lab * b_lab);
+  
+  // Calculate hue (angle in the a,b plane)
+  // Use atan2 for correct quadrant handling
+  let h = Math.atan2(b_lab, a) * 180 / Math.PI;
+  
+  // Normalize hue to [0, 360) range
   if (h < 0) h += 360;
+  
+  // For very low chroma (near grayscale), hue value becomes meaningless
+  // In this case, we can either keep last valid hue or set to 0
+  // Use a threshold to determine low chroma
+  const hue = C < 0.00001 ? 0 : h;
 
-  // Round to 4 decimal places for better precision
-  const result = `oklch(${(l * 100).toFixed(4)}% ${c.toFixed(4)} ${h.toFixed(4)})`;
+  // Format result with better precision and percentage notation for lightness
+  const result = `oklch(${(L * 100).toFixed(4)}% ${C.toFixed(4)} ${hue.toFixed(4)})`;
   console.log('OKLCH result:', result);
   return result;
 }
